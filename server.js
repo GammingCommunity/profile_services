@@ -5,23 +5,25 @@ const cors = require('cors');
 var fs = require('fs');
 var app=  express();
 const uploads= require('./upload');
-var multer = require('multer');
-var upload = multer({ dest: 'uploads/' });
+//var multer = require('multer');
+//var upload = multer({ dest: 'uploads/' });
 
-/*app.use(fileUpload({
-
-    createParentPath: true
-}));*/
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/',
+    createParentPath: true,
+    safeFileNames: true
+}));
 
 //add other middleware
 app.use(cors());
 
 // post image
-app.post('/upload-avatar', upload.single('profile_image'),async (req,res,next)=>{
+app.post('/upload-avatar',async (req,res,next)=>{
     try {
         
-        var result= await uploads(req.file.path,req.body.profile_id);
-        //console.log(result);
+        var result = await uploads(req.files.profile_image.tempFilePath,req.body.profile_id);
+        console.log(req.files);
         
         res.json({ "code": "200", "success": true, message: "Upload success", "image_url": result })
         
